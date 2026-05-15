@@ -1,0 +1,48 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  backend-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      APP_ENV: production
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t payroll-app .
+
+      - name: Run Basic Test
+        run: |
+          docker run -d -p 5000:5000 --name payroll-test payroll-app
+          sleep 10
+          curl http://localhost:5000
+          docker stop payroll-test
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/payroll-app
+
+            git pull origin main
+
+            docker compose down
+
+            docker compose up -d --build
