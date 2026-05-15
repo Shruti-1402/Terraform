@@ -93,14 +93,22 @@ This enforces least privilege access.
 
 # Security Features
 
-- Private subnet isolation
-- Security Group restrictions
-- NACL restrictions
-- Encryption at rest
-- Controlled ingress and egress
-- No public database access
+- RDS is deployed in private subnets with no public access.
+- EC2 instances use separate security groups for tenant isolation.
+- IAM roles enforce least-privilege access.
+- S3 encryption and versioning are enabled.
+- Network ACLs restrict unnecessary traffic.
+- Region eu-west-2 supports UK GDPR data residency requirements.
 
 ---
+
+# Assumptions
+
+- Infrastructure is designed for demonstration purposes.
+- NAT Gateway is deployed in a single AZ to reduce cost.
+- AWS Secrets Manager should be used in production for DB credentials.
+- SSH access should ideally be restricted through VPN or AWS SSM Session Manager.
+- Auto Scaling and Load Balancer are excluded from Task 1 scope.
 
 # Region Selection
 
